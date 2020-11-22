@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>个人中心</title>
+<div th:include="/common/layui"></div>
+<div th:include="/common/jq"></div>
+</head>
+ <script type="text/javascript">
+function save(){
+ var form = layui.form;
+	  var id=$("#id").val();
+		var name= $('#name').val();
+      var psw= $('#psw').val();
+      var tel= $('#tel').val();
+		console.log(name);
+      $.post("http://localhost:8080/user/go_update",{id:id,name:name,psw:psw,tel:tel},
+       function(result){
+      	alert(result.message);
+      },'json');
+      location.reload();
+	}
+</script>
+<body>
+<div th:include="/book/manage_top" style="height: 60px; width: 100%;"></div>
+<div th:include="/book/left_menu" style="top:60px;"></div>
+<div style="margin-top:40px;">
+<div style="padding-left: 20%; position: absolute;">
+ <img src="/image/base/default_head_img.jpg" style="width: 150px; height: 150px; border-radius: 100%;"> 
+</div>
+<div style="padding-left: 40%;width: 300px;">
+  <div class="layui-form-item">
+    <label class="layui-form-label">ID:</label>
+    	<span class="layui-form-label" th:text="${session.currentUser.id}">id</span>
+     <input type="hidden" id="psw" required  lay-verify="required" th:value="${session.currentUser.psw}" autocomplete="off" class="layui-input" hidden="">
+     <input type="hidden" id="id" required  lay-verify="required" th:value="${session.currentUser.id}" autocomplete="off" class="layui-input" hidden="">
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">昵称</label>
+    <div class="layui-input-block">
+      <input type="text" id="name" required  lay-verify="required" th:value="${session.currentUser.name}" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">电话</label>
+    <div class="layui-input-block">
+      <input type="text" id="tel" required  lay-verify="required" th:value="${session.currentUser.tel}"  autocomplete="off" class="layui-input">
+    </div>    
+    	  <input type="submit" class="layui-btn layui-btn-sm"  onclick="save()" style="margin:80% ;margin-top: 20px; " value="修改">
+  </div>  
+ </div>
+ </div>
+</body>
+</html>

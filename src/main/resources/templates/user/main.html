@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title th:text="${application.config.webName}+' 后台' "></title>
+<div th:include="/common/layui"></div>
+<div th:include="/common/jq"></div>
+</head>
+<script type="text/javascript">
+
+window.location.href='/user/booktype';
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,43 @@
+<meta charset="UTF-8" />
+<div style="height: 60px; width: 100%;   background-color: #23262E; display: flex; display: -webkit-flex;">
+	<div style="flex: 1; -webkit-flex: 1; ">
+		<ul class="layui-nav" lay-filter="">
+		    <li class="layui-nav-item"><a href="/user/booktype">分类游览</a></li>
+		  <li class="layui-nav-item "><a href="/user/borrowbook">图书借阅</a></li>
+		    <li class="layui-nav-item"><a href="/user/returnbook">图书归还</a></li>
+		    <li class="layui-nav-item"><a href="/user/userbook">借阅记录</a></li>
+		  <li class="layui-nav-item"><a href="/book/library">图书馆介绍</a></li>		  
+		</ul>
+		</div>
+		<div style="  border-left: 1px solid #befffe; color: #c2c2c2;  background-color: #393D49;">
+		<ul class="layui-nav">
+		  <li class="layui-nav-item">
+           <a href="/user/myself">个人中心<span class="layui-badge-dot"></span></a>
+           </li>
+			<li class="layui-nav-item"><a href="javascript:;"class="admin-header-user"> 
+				<img src="/image/base/default_head_img.jpg"	style="width: 40px; height: 40px; border-radius: 100%;"> 
+				<span th:text="${session.currentUser?.name}">昵称</span>
+				<span class="layui-nav-more"></span></a>
+<!-- 				<p shiro:lackPermission="用户登录">用户没登录</p>
+<!-- 				<shiro:lackPermission name="用户登录">用户没登录</shiro:lackPermission>
+
+				<p shiro:hasPermission="用户登录">用户已登录</p> -->
+				
+				<div th:if="${session.currentUser}">
+				<dl class="layui-nav-child my_top_menu layui-anim layui-anim-upbit">
+					<dd>
+						<a href="http://localhost:8080/user/logout">注销</a>
+					</dd>
+				</dl>
+				</div>
+				<div th:unless="${session.currentUser}">
+				<dl class="layui-nav-child my_top_menu layui-anim layui-anim-upbit">
+					<dd>
+						<a href="http://localhost:8080/user/login">登录</a>
+					</dd>
+				</dl>
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>

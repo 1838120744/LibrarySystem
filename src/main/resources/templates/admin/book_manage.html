@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title th:text="图书管理"></title>
+
+<div th:include="/common/layui"></div>
+<div th:include="/common/jq"></div>
+
+<!--添加 layui 自己的 css js  支持加载-->
+<link href="/css/manage_base.css"	rel="stylesheet" />
+<script	src="/js/manage_base.js"></script>
+<!--添加 layui 自己的 css js  支持加载-->
+
+</head>
+
+<script>
+//定义在外面。可以代码中  使用 table
+var table;
+layui.use([ 'laydate', 'laypage', 'layer','form', 'table', 'carousel',
+			'upload', 'element' ], function() {
+	table = layui.table;
+});
+
+var global_ids;
+var global_ids_len;
+
+var w ;//窗口的宽
+var h ;//窗口的高
+
+//添加
+function add(){
+	window.open("/book/add");	
+	}
+
+//打开编辑窗口
+function edit(id){
+	window.open("/book/edit?id="+id);	
+}
+
+//子窗口调用 的  关闭窗口方法 
+function closeDlg(msg){
+	 layer.closeAll();
+	 layer.msg(msg);
+	 reload_data();
+}
+
+//相当前刷新  重新加载
+function reload_data(){
+  table.reload('table', {
+		where: {
+	     },page: {curr: 1 //重新从第 1 页开始
+				}
+    });
+}
+
+function del(ids){
+	var index = layer.load(1, {
+		  shade: [0.1,'#fff'] //0.1透明度的白色背景
+	});
+	$.post('/book/delete',{ids:ids},function(result){
+		if(result.success){
+			layer.closeAll();
+			layer.msg('删除成功');
+			reload_data();
+		}else{
+			layer.closeAll();
+			layer.msg(result.msg);
+		}
+	},'json');
+}
+
+</script>
+<body style="padding-top: 3px;">
+
+<div class="layui-table-toolbar" style="margin-bottom: 3px; ">
+		<div class="demoTable">
+			<button onclick="add()"  class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe654;</i>添加</button>
+			<button onclick="delSelected()" class="layui-btn layui-btn-sm layui-btn-danger"><i class="layui-icon">&#xe640;</i>删除</button>
+		    <button class="layui-btn layui-btn-sm" onclick="reload_data()"><i class="layui-icon">&#xe669;</i>刷新</button>    	        
+	        <input style="margin-left:40%;height: 20px" class="layui-input-inline" name="userId" id="demoReload" autocomplete="off">
+	     	 <select id="selected" lay-verify="required">
+	        <option value="2">编号</option>
+	        <option value="3">书名</option>
+	        <option value="4">作者</option>
+	        <option value="5">出版社</option>
+	        </select>
+	       <button class="layui-btn layui-btn-sm" data-type="reload">搜索</button>
+	    </div>   
+</div>
+
+<table class="layui-hide"   id="table" lay-filter="table"></table>
+
+</body>
+
+<script type="text/html" id="table_bar">
+<div class="layui-btn-group">
+	<a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+</div>
+</script>
+
+<script>
+/*<![CDATA[*/
+		layui.use([ 'laydate', 'laypage', 'layer', 'table', 'carousel',
+				'upload', 'element' ], function() {
+			var laydate = layui.laydate //日期
+			, laypage = layui.laypage //分页
+			,layer = layui.layer //弹层
+			, table = layui.table //表格
+			, carousel = layui.carousel //轮播
+			, upload = layui.upload //上传
+			, element = layui.element; //元素操作
+			  table.render({
+			    elem: '#table'
+			    ,url: '/book/list'
+			    ,height:'full-20'
+			    ,totalRow: true
+				,cols: [ [
+				    {checkbox: true, fixed: true} 
+				  ,{field:'imageUrl', title: '图片',fixed:true,templet:function (d) {
+                      return '<img src='+d.imageUrl+' style="width: 55px; height: 80px;">';},width: 55}
+			      ,{field:'id', title: '图书编号',sort: true,fixed:true, width:90,style:'font-size: 12px;' }
+			      ,{field:'name', title: '书名', sort: true,fixed:true,width:90,style:'font-size: 12px;' }
+			      ,{field:'author', title: '作者', sort: true,fixed:true,width:90,style:'font-size: 12px;'}
+			      ,{field:'publisher', title: '出版社', sort: true,fixed:true,width:90,style:'font-size: 12px;'}
+			      ,{field:'value', title: '价格', sort: true,fixed:true,width:90 ,style:'font-size: 12px;'}
+			      ,{field:'number', title: '数量',sort: true,fixed:true, width:90,style:'font-size: 12px;'}
+			      ,{field:'introd', title: '介绍', width:90,style:'font-size: 12px;',fixed:true}
+			      ,{field:'bookType.name', title: '类型',fixed:true,sort:true,width:90,style:'font-size: 12px;',templet:'<div>{{d.bookType.name||""}}</div>'}
+			      ,{fixed:'right', width:100,title: '操作',  toolbar: '#table_bar'}
+			       ] ]
+			    ,id: 'table'
+			    ,page: true
+			    ,limits:[20,30,40,50],
+			   limit:10
+			  });
+			
+			//监听工具条 table_bar
+				table.on('tool(table)', function(obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+					var data = obj.data //获得当前行数据
+					, layEvent = obj.event; //获得 lay-event 对应的值
+					if (layEvent === 'edit') {
+						edit(data.id);
+					} else if(layEvent === 'set_new_pwd'){
+						set_new_pwd(data.id);
+					}
+				});
+				var $ = layui.$, active = {
+			            reload: function(){
+			                var demoReload = $('#demoReload');
+                        
+			                //执行重载
+			                table.reload('table', {
+			                    page: {
+			                        curr: 1 //重新从第 1 页开始
+			                    }
+			                    ,where: {
+			                        key: {
+			                            id: demoReload.val()
+			                            
+			                        }
+			                    }
+			                });
+			            }
+			        };
+			        $('.demoTable .layui-btn').on('click', function(){
+			            search = $('#demoReload').val();
+			            console.log(search);
+				        var options = $("#selected option:selected").val();
+			            console.log(options);
+			            $('.layui-table-fixed tbody tr').each(function(i){
+			                    var user = $(this).children('td').eq(options).children('div').html();
+					            console.log(user);
+			                    if(user.indexOf(search)>=0){
+			                        $(this).show()
+			                        $('.layui-table-main tbody tr').eq(i).show()
+			                    }else{
+			                        $('.layui-table-main tbody tr').eq(i).hide()
+			                        $(this).hide();
+			                    }
+			            });
+			        });
+				
+		});
+		/*]]>*/
+</script>
+</html>

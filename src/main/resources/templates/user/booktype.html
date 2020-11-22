@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title th:text="${application.config.webName}+' 后台' "></title>
+<div th:include="/common/layui"></div>
+<div th:include="/common/jq"></div>
+<link href="/css/manage_base.css"	rel="stylesheet" />
+<script	src="/js/manage_base.js"></script>
+<script type="text/javascript">
+var table;
+layui.use([ 'laydate', 'laypage', 'layer', 'table', 'carousel',
+	'upload', 'element' ], function() {
+var laydate = layui.laydate //日期
+, laypage = layui.laypage //分页
+,layer = layui.layer //弹层
+, table = layui.table //表格
+, carousel = layui.carousel //轮播
+, upload = layui.upload //上传
+, element = layui.element; //元素操作
+var url='/book/list';
+	table.render({
+	    elem: '#table'
+	    ,url: url
+	    ,height:'full-115'
+	    ,totalRow: true
+		,cols: [ [
+		    {checkbox: true, fixed: true} 
+		  ,{field:'imageUrl', title: '图片',fixed:true,templet:function (d) {
+                    return '<img src='+d.imageUrl+' style="width: 55px; height: 80px;">';},width: 55}
+	      ,{field:'id', title: '图书编号',sort: true,fixed:true, width:100,style:'font-size: 12px;' }
+	      ,{field:'name', title: '书名', sort: true,fixed:true,width:90,style:'font-size: 12px;' }
+	      ,{field:'author', title: '作者', sort: true,fixed:true,width:90,style:'font-size: 12px;'}
+	      ,{field:'publisher', title: '出版社', sort: true,fixed:true,width:90,style:'font-size: 12px;'}
+	      ,{field:'value', title: '价格', sort: true,fixed:true,width:90 ,style:'font-size: 12px;'}
+	      ,{field:'number', title: '数量',sort: true,fixed:true, width:90,style:'font-size: 12px;'}
+	      ,{field:'introd', title: '介绍', width:90,style:'font-size: 12px;',fixed:true}
+	      ,{field:'bookType.name', title: '类型',fixed:true,sort:true,width:90,style:'font-size: 12px;',templet:'<div>{{d.bookType.name||""}}</div>'}
+	       ] ]
+	    ,id: 'table'
+	    ,page: true
+	    ,limits:[20,30,40,50],
+	   limit:10
+	  });
+	
+});
+</script>
+</head>
+<body>
+<div th:include="/book/manage_top" style="height: 60px; width: 100%;"></div>
+<div class="layui-side layui-bg-black" id="left_menu" style="top: 60px; width: 90px;">
+<div class="layui-side-scroll">
+	
+	<ul class="layui-nav layui-nav-tree" lay-filter="left_menu" >
+		<li class="layui-nav-item layui-nav-itemed" >   
+				<dd  dd_text="所有"  type="0"  url="/book/list" class="layui-this" id="0" ><a href="#">所有</a></dd>                                       
+				<dd  dd_text="数学"   type="0"  url="/book/booktype/1"  id="1" ><a href="#">数学</a></dd>                                          
+			   <dd  dd_text="美术"   type="0"  url="/book/booktype/3"  id="3" ><a href="#">美术</a></dd>
+			   <dd  dd_text="语文"   type="0"  url="/book/booktype/4"  id="4" ><a href="#">语文</a></dd>
+			   <dd  dd_text="计算机"   type="0"  url="/book/booktype/5"  id="5" ><a href="#">计算机</a></dd>
+			   <dd  dd_text="英文"   type="0"  url="/book/booktype/6"  id="6" ><a href="#">英文</a></dd>
+			   <dd  dd_text="小说"   type="0"  url="/book/booktype/7"  id="7" ><a href="#">小说</a></dd>
+			   <dd  dd_text="杂志"   type="0"  url="/book/booktype/2"  id="2" ><a href="#">杂志</a></dd>
+			   <dd  dd_text="科幻"   type="0"  url="/book/booktype/9"  id="9" ><a href="#">科幻</a></dd>
+			   <dd  dd_text="其他"   type="0"  url="/book/booktype/8"  id="8" ><a href="#">其他</a></dd>
+			   
+		</li>
+	</ul>
+	
+</div>
+
+</div>
+<div class="layui-table-toolbar" style="margin-top: 20px;flex:1;-webkit-flex:1;padding-left: 100px;">
+		<div class="demoTable"> 	        
+	        <input style="margin-left:20px;" class="layui-input-inline" name="userId" id="demoReload" autocomplete="off">
+	     	 <select id="selected" lay-verify="required" style="margin-left:10px;" class="layui-input-inline">
+	        <option value="2">编号</option>
+	        <option value="3">书名</option>
+	        <option value="4">作者</option>
+	        <option value="5">出版社</option>
+	        </select>
+	       <button class="layui-btn layui-btn-sm" style="margin-left:10px; "  data-type="reload">搜索</button>
+	    </div>   
+	    <table class="layui-hide" id="table" lay-filter="table"></table>
+	    
+</div>
+</body>
+<script>
+/*<![CDATA[*/
+		layui.use([ 'laydate', 'laypage', 'layer', 'table', 'carousel',
+				'upload', 'element' ], function() {
+			var laydate = layui.laydate //日期
+			, laypage = layui.laypage //分页
+			,layer = layui.layer //弹层
+			, table = layui.table //表格
+			, carousel = layui.carousel //轮播
+			, upload = layui.upload //上传
+			, element = layui.element; //元素操作
+			var url='/book/list';
+			element.on('nav(left_menu)', function(elem){
+				// $(this)
+				elem = $(this).parent();		
+			    var id = $(elem).attr("id");
+				url = $(elem).attr("url");
+				
+				console.log(id);
+				console.log(url);	
+				
+				table.render({
+				    elem: '#table'
+				    ,url: url
+				    ,height:'full-115'
+				    ,totalRow: true
+					,cols: [ [
+					    {checkbox: true, fixed: true} 
+					  ,{field:'imageUrl', title: '图片',fixed:true,templet:function (d) {
+	                      return '<img src='+d.imageUrl+' style="width: 55px; height: 80px;">';},width: 55}
+				      ,{field:'id', title: '图书编号',sort: true,fixed:true, width:100,style:'font-size: 12px;' }
+				      ,{field:'name', title: '书名', sort: true,fixed:true,width:90,style:'font-size: 12px;' }
+				      ,{field:'author', title: '作者', sort: true,fixed:true,width:90,style:'font-size: 12px;'}
+				      ,{field:'publisher', title: '出版社', sort: true,fixed:true,width:90,style:'font-size: 12px;'}
+				      ,{field:'value', title: '价格', sort: true,fixed:true,width:90 ,style:'font-size: 12px;'}
+				      ,{field:'number', title: '数量',sort: true,fixed:true, width:90,style:'font-size: 12px;'}
+				      ,{field:'introd', title: '介绍', width:90,style:'font-size: 12px;',fixed:true}
+				      ,{field:'bookType.name', title: '类型',fixed:true,sort:true,width:90,style:'font-size: 12px;',templet:'<div>{{d.bookType.name||""}}</div>'}
+				       ] ]
+				    ,id: 'table'
+				    ,page: true
+				    ,limits:[20,30,40,50],
+				   limit:10
+				  });
+				
+			});
+			  
+				var $ = layui.$, active = {
+			            reload: function(){
+			                var demoReload = $('#demoReload');
+                        
+			                //执行重载
+			                table.reload('table', {
+			                    page: {
+			                        curr: 1 //重新从第 1 页开始
+			                    }
+			                    ,where: {
+			                        key: {
+			                            id: demoReload.val()
+			                            
+			                        }
+			                    }
+			                });
+			            }
+			        };
+			        $('.demoTable .layui-btn').on('click', function(){
+			            search = $('#demoReload').val();
+			            console.log(search);
+				        var options = $("#selected option:selected").val();
+			            console.log(options);
+			            $('.layui-table-fixed tbody tr').each(function(i){
+			                    var user = $(this).children('td').eq(options).children('div').html();
+			                    if(user.indexOf(search)>=0){
+			                        $(this).show()
+			                        $('.layui-table-main tbody tr').eq(i).show()
+			                    }else{
+			                        $('.layui-table-main tbody tr').eq(i).hide()
+			                        $(this).hide();
+			                    }
+			            });
+			        });
+				
+		});
+		/*]]>*/
+</script>
+</html>

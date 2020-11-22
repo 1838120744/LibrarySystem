@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>layui动画测试</title>
+       <script src="/jq/jquery_2_1.min.js"></script>
+<!--添加 layui  支持加载-->
+<link rel="stylesheet" href="/layui-v2.4.5/layui/css/layui.css">
+<script src="/layui-v2.4.5/layui/layui.js"></script>
+</head>
+<body>
+    <div style="text-align: center">
+        <img data-anim="layui-anim-scaleSpring" class="layui-upload layui-anim" id="id_upload_img"
+             src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1564555274864&di=f0897dc4a00cccc5f71bdd0d46fe1720&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201608%2F21%2F20160821230024_MyCYK.thumb.700_0.jpeg" style="border-radius: 50%; width: 18%">
+        <div class="layui-word-aux">点击更换我的头像</div>
+        <div class="layui-word-aux">上传图片限制大小 60kb</div>
+    </div>
+
+<script>
+    layui.use(['upload'], function () {
+            var layer = layui.layer;
+            var $ = layui.jquery
+                , upload = layui.upload;
+        //普通图片上传开始
+            var uploadInst = upload.render({
+                elem: '#id_upload_img',
+                url: '/book/upload_img/',
+                size: 60, //限制文件大小，单位 KB
+                before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#id_upload_img').attr('src', result); //图片链接（base64）
+                });
+                },
+                done: function (res) {
+                    //如果上传失败
+                    if (res.status > 0) {
+                        return layer.msg('上传失败');
+                    }
+                    //上传成功
+                    }
+                    , error: function () {
+                    //演示失败状态，并实现重传
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function () {
+                    uploadInst.upload();
+                    });
+                    }
+                    });
+        //普通图片上传结束
+    })
+</script>
+</body>
+</html>

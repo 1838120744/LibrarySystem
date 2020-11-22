@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title th:text="图书修改"></title>
+
+<div th:include="/common/layui"></div>
+<div th:include="/common/jq"></div>
+
+<link href="/css/userlogin.css"	rel="stylesheet" />
+
+</head>
+ <script>
+layui.use(['form', 'layer', 'layedit'], function () {
+	$ = layui.jquery;
+	var form = layui.form;
+	var layer = layui.layer;
+	var layedit = layui.layedit;
+	$(function () {
+		var booktypename=$("#booktypename").val();
+		$.ajax({
+			url: '/book/booktype/list',
+			dataType: 'json',
+			data:{'state': 0},	//查询状态为正常的所有机构类型
+			type: 'post',
+			success: function (data) {
+				$.each(data.data, function (index, item) {
+					$('#type').append(new Option(item.name, item.id));// 下拉菜单里添加元素
+					if(item.name==booktypename)
+				    $("#type").val(item.id);	
+				});
+				layui.form.render("select");
+			}
+		})
+	});
+})
+layui.use('upload', function(){
+        var $ = layui.jquery
+            ,upload = layui.upload;
+        //普通图片上传
+        var uploadInst = upload.render({
+            elem: '#test1'
+            ,url: '/book/upload/'
+            ,accept:'images'
+            ,size:50000
+            ,before: function(obj){
+                obj.preview(function(index, file, result){
+                    $('#demo1').attr('src', result);
+                });
+            }
+            ,done: function(res){
+                //如果上传失败
+                if(res.code > 0){
+                    return layer.msg('上传失败');
+                }
+                //上传成功
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: #4cae4c;">上传成功</span>');
+
+                var fileupload = $(".image");
+                fileupload.attr("value",res.data.src);
+                console.log(fileupload.attr("value"));
+                fileupload.attr("value");
+            }
+            ,error: function(){
+                //演示失败状态，并实现重传
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function(){
+                    uploadInst.upload();
+                });
+            }
+        });
+
+    });
+function add() {
+           var id= $('#id').val();
+           var name= $('#name').val();
+           var author= $('#author').val();
+           var bookType= $('#type').val();
+           console.log(bookType);
+           var imageUrl=$('#demo1')[0].src;
+           var publisher= $('#publisher').val();
+           var value= $('#value').val();
+           var number= $('#number').val();
+           var introd= $('#introd').val();
+           $.post('/book/go_add',{imageUrl:imageUrl,id:id,name:name,author:author,
+           	publisher:publisher,value:value,number:number,introd:introd,bookType:bookType},function(result){
+       			layer.msg(result.message);
+       	},'json');
+}
+</script>
+<body>
+    <div class="registerDiv">
+        <input type="hidden" name="images" class="image" >
+        <div class="usernameWrapDiv">
+                <div class="usernameLabel">
+                    <label>照片</label>
+                </div>
+                <div class="usernameDiv">
+		            <button type="button" class="layui-btn" id="test1">更新图片</button>
+		            <img th:src="${book.imageUrl}" class="layui-upload-img" style="width: 80px; height: 100px;margin-left:40px;" id="demo1">
+		            <p id="demoText"></p> 
+                </div>
+            </div>
+            <div class="usernameDiv"></div>
+            <div class="usernameWrapDiv">
+                <div class="usernameLabel">
+                    <label>编号</label>
+                </div>
+                <div class="usernameDiv">
+                    <input class="layui-input" type="text" id="id" th:value="${book.id}" >
+                </div>
+            </div>
+            <div class="usernameWrapDiv">
+                <div class="usernameLabel">
+                    <label>书名</label>
+                </div>
+                <div class="usernameDiv">
+                    <input class="layui-input" type="text" id="name" th:value="${book.name}" >
+                </div>
+            </div>
+            <div class="usernameWrapDiv">
+                <div class="usernameLabel">
+                    <label>作者</label>
+                </div>
+                <div class="usernameDiv">
+                    <input class="layui-input" type="text" id="author" th:value="${book.author}">
+                </div>
+            </div>
+            <div class="usernameWrapDiv">
+                <div class="usernameLabel">
+                    <label>类型</label>
+               </div>
+                <input type="hidden" id="booktypename" th:value="${book.bookType.name}">
+                <div class="usernameDiv">
+                    <select class="layui-input" id="type" lay-verify="required">
+                       <option>请选择类型:</option>
+                       </select>
+                </div>
+            </div>
+            <div class="usernameWrapDiv">
+                <div class="usernameLabel">
+                    <label>出版社</label>
+                </div>
+                <div class="usernameDiv">
+                    <input class="layui-input" type="text" id="publisher" th:value="${book.publisher}">
+                </div>
+            </div>
+            <div class="usernameWrapDiv">
+                <div class="usernameLabel">
+                    <label>价格</label>
+                </div>
+                <div class="usernameDiv">
+                    <input class="layui-input" type="text" id="value" th:value="${book.value}">
+                </div>
+            </div>
+            <div class="usernameWrapDiv">
+                <div class="usernameLabel">
+                    <label>数量</label>
+                </div>
+                <div class="usernameDiv">
+                    <input class="layui-input" type="text" id="number" th:value="${book.number}">
+                </div>
+            </div>
+            <div class="usernameWrapDiv">
+                <div class="usernameLabel">
+                    <label>介绍</label>
+                </div>
+                <div class="usernameDiv">
+                    <input class="layui-input" type="text" id="introd" th:value="${book.introd}">
+                </div>
+            </div>
+            <div class="usernameDiv">
+				<button class="layui-btn" th:text="添加"  lay-submit="" lay-filter="demo1"
+					onclick="add()"></button>
+			</div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title th:text="${application.config.webName}+' 后台' "></title>
+<div th:include="/common/layui"></div>
+<div th:include="/common/jq"></div>
+<link href="/css/manage_base.css"	rel="stylesheet" />
+<script	src="/js/manage_base.js"></script>
+</head>
+<script th:inline="javascript">
+window.location.href='/user/booktype';
+var table;
+layui.use([ 'laydate', 'laypage', 'layer','form', 'table', 'carousel',
+			'upload', 'element' ], function() {
+	  var element = layui.element;
+	table = layui.table;
+	var currentUser = [[${session.currentUser}]]; //把当前用户信息存到session中
+	console.log(currentUser.name);
+	if(currentUser!=null)
+		window.location.href='/user/main';
+});
+</script>
+<body background="image/bg.jpg"
+style=" background-repeat:no-repeat ;
+background-size:100% 100%;
+background-attachment: fixed;">
+<div style="height: 60px; width: 100%;   background-color: #23262E; display: flex; display: -webkit-flex;">
+	<div style="flex: 1; -webkit-flex: 1; ">
+		<ul class="layui-nav" lay-filter="">  
+		    <li class="layui-nav-item"><a href="/user/booktype">分类游览</a></li>
+		  <li class="layui-nav-item "><a href="/user/borrowbook">图书借阅</a></li>
+		  <li class="layui-nav-item"><a href="/book/library">图书馆介绍</a></li>
+		</ul>
+		</div>
+		<div style="  border-left: 1px solid #befffe; color: #c2c2c2;  background-color: #393D49;">
+		<ul class="layui-nav">
+			<li class="layui-nav-item"><a href="javascript:;"class="admin-header-user"> 
+				<img src="/image/base/default_head_img.jpg"	style="width: 40px; height: 40px; border-radius: 100%;"> 
+				<span th:text="未登录">昵称</span>
+				<span class="layui-nav-more"></span></a>
+				<dl class="layui-nav-child my_top_menu layui-anim layui-anim-upbit">
+					<dd>
+						<a href="http://localhost:8080/user/login">登录</a>
+					</dd>
+				</dl>
+			</li>
+		</ul>
+	</div>
+</div>
+<div style="text-align:center;vertical-align:middle;">
+				<img src="/image/logo.png" style="margin-top: 30px;"> 
+<!-- 			   <input style="width: 250px;margin-left: 30%" name="userId" id="search" required lay-verify="required" autocomplete="off" class="layui-input"> -->
+</div>
+</body>
+</html>
